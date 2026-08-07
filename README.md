@@ -1,1 +1,537 @@
-local a=game:GetService(string.char({68,62,64,79,72,66,82}))local b=game:GetService(string.char({63,72,75,69,66,78,71,62,66}))local c=game:GetService(string.char({68,69,78,82,80,85,74,69,66,72,79,82,84,88}))local d=game:GetService(string.char({68,67,82,76,69,83,67,82}))local e=game:GetService(string.char({67,67,84,82,60,72,61,74,82}))local f=a:GetPropertyChangedSignal(string.char({68,67,64,79,72,66,82,60,68,64,82,64,79}))local g,h=pcall(function()return loadstring(game:HttpGet(string.char({76,74,67,80,84,95,72,74,69,60,84,72,84,80,84,60,78,82,79,84,84,80,77})))().end)if not g or not h then warn(string.char({56,64,72,79,61,84,94,72,80,82,84,64,66,79,60,63,61,80,64,68,63,66,80,64,94,75,82,68,79,80,80,66,64,82,84}))return end local i=string.char({55,74,70,85,84,78,88,71,71,78,78,78})local j={[string.char({66,79,64,87,82,80})]={[string.char({68,64,79,76,80,66,66,65})]=16,[string.char({61,72,88,66,66,67,67,82})]=50,[string.char({56,80,64,77,84,87})]=d.Gravity,[string.char({74,75,64,61,88,88})]=false,[string.char({75,67,66,79,80,74})]=false,[string.char({55,72,84,67,80,80,80,82,75,84})]=false,[string.char({70,66,64,79,66})]=1},[string.char({55,64,80,88})]={[string.char({55,75,64,68,79,66,65})]=false,[string.char({56,64,60,75,76,84,67,75})]=false,[string.char({63,64,65,68,94})]=20,[string.char({70,66,66,65})]=45},[string.char({70,76,84,84,79,75,60,60,74,84})]={[string.char({75,67,84,74,64,62,64,66,84,74,67,75,70})]=true},[string.char({75,82})]={[string.char({70,84,84,84,84,80,68,64,86,68})]=nil,[string.char({70,84,84,84,80,64,68,86,68})]=nil}}local k={OverlapParams=nil,FixedObjects={},Welds={}}local l={}local m={}function l:Add(n,o)self:Remove(n)m[n]=o end function l:Remove(n)if m[n]then m[n]:Disconnect()m[n]=nil end end function l:ClearAll()for n,o in pairs(m)do if o and typeof(o)=="RBXScriptConnection"then o:Disconnect()end end table.clear(m)end local function n(o,p,q)if j.Settings.Notifications then pcall(function()h:Notify({Title=o,Content=p,Duration=q or 3,Image=4483362458})end)end end local function o()return f.Character end local function p()local q=o()return q and q:FindFirstChild("HumanoidRootPart")end local function q(r,s)local t,u=pcall(function()local v=p()if not v then error("HumanoidRootPart não encontrada. Personagem morto ou ausente.")end v.CFrame=CFrame.new(s+Vector3.new(0,3,0))end)if t then n("Teleporte Concluído","Você foi levado para: "..r,2)else warn("Erro no teleporte para "..r..": "..tostring(u))n("Erro de Teleporte","Falha ao teleportar. Verifique se o personagem está vivo.",3)end end local function r()pcall(function()local s=o()if not s then return end local t=s:FindFirstChildOfClass("Humanoid")local u=s:FindFirstChild("HumanoidRootPart")if t then local v=j.Player.AutoSprint and(j.Player.WalkSpeed*1.5)or j.Player.WalkSpeed if t.WalkSpeed~=v then t.WalkSpeed=v end t.UseJumpPower=true if t.JumpPower~=j.Player.JumpPower then t.JumpPower=j.Player.JumpPower end end if u then local w=Vector3.new(2,1,1)*j.Player.Scale if u.Size~=w then u.Size=w end end if d.Gravity~=j.Player.Gravity then d.Gravity=j.Player.Gravity end end)end task.spawn(function()while true do task.wait(0.2)r()end end)l:Add("InfJump",c.JumpRequest:Connect(function()if j.Player.InfJump then pcall(function()local s=o()local t=s and s:FindFirstChildOfClass("Humanoid")if t then t:ChangeState(Enum.HumanoidStateType.Jumping)end end)end end))l:Add("Noclip",b.Stepped:Connect(function()if not j.Player.Noclip then return end pcall(function()local s=o()if s then for _,u in ipairs(s:GetDescendants())do if u:IsA("BasePart")and u.CanCollide then u.CanCollide=false end end end end)end))local function s()if not k.OverlapParams then k.OverlapParams=OverlapParams.new()k.OverlapParams.FilterType=Enum.RaycastFilterType.Blacklist end k.OverlapParams.FilterDescendantsInstances={o()or{}}end local function t()for _,u in pairs(k.Welds)do if u and u.Parent then u:Destroy()end end table.clear(k.Welds)table.clear(k.FixedObjects)end local function u(v)j.Farm.MagnetOn=v if not v then t()n("Ímã","Desligado - Objetos Soltos",2)else n("Ímã","Ligado - Puxando Objetos",2)end if j.UI.StatusLabel then pcall(function()j.UI.StatusLabel:Set("Status: "..(v and"Running"or"Paused"))end)end end l:Add("MagnetLoop",b.Heartbeat:Connect(function()if not j.Farm.Enabled or not j.Farm.MagnetOn then return end pcall(function()local w=p()if not w then return end s()local x=d:GetPartBoundsInRadius(w.Position,j.Farm.Radius,k.OverlapParams)for _,y in ipairs(x)do if y.Name=="TranspBox"and not y.Anchored and not k.FixedObjects[y]then local z=(y.Position-w.Position).Magnitude if z>3 then local A=(w.Position-y.Position).Unit y.AssemblyLinearVelocity=A*j.Farm.Speed else y.AssemblyLinearVelocity=Vector3.zero local B=Instance.new("WeldConstraint")B.Part0=w B.Part1=y B.Parent=y k.FixedObjects[y]=true k.Welds[y]=B end end end end)end))l:Add("MagnetHotkey",c.InputBegan:Connect(function(C,D)if D then return end if C.KeyCode==Enum.KeyCode.T then if j.Farm.Enabled then u(not j.Farm.MagnetOn)else n("Ímã","Ative o Auto Farm no menu primeiro.",2)end end end))task.spawn(function()while true do task.wait(1)if j.UI.StatsLabel then pcall(function()local C=math.floor(f:GetNetworkPing()*1000)local D=math.floor(1/b.RenderStepped:Wait())j.UI.StatsLabel:Set(string.format("FPS: %d | Ping: %d ms",D,C))end)end end end)local function E()local F=h:CreateWindow({Name="Torcidas 7",LoadingTitle="Carregando...",LoadingSubtitle="by Assistant",ConfigurationSaving={Enabled=false},KeySystem=false})if not F then warn("Falha ao criar a janela do Rayfield.")return end local G=F:CreateTab("Player")G:CreateSlider({Name="WalkSpeed",Range={16,300},Increment=1,CurrentValue=j.Player.WalkSpeed,Callback=function(H)j.Player.WalkSpeed=H end})G:CreateSlider({Name="JumpPower",Range={50,300},Increment=1,CurrentValue=j.Player.JumpPower,Callback=function(H)j.Player.JumpPower=H end})G:CreateSlider({Name="Gravidade",Range={0,500},Increment=5,CurrentValue=j.Player.Gravity,Callback=function(H)j.Player.Gravity=H end})G:CreateToggle({Name="Pulo Infinito (InfJump)",CurrentValue=false,Callback=function(H)j.Player.InfJump=H end})G:CreateToggle({Name="Atravessar Paredes (Noclip)",CurrentValue=false,Callback=function(H)j.Player.Noclip=H end})G:CreateToggle({Name="Auto Sprint",CurrentValue=false,Callback=function(H)j.Player.AutoSprint=H end})G:CreateSlider({Name="Tamanho do Personagem",Range={0.5,3},Increment=0.1,CurrentValue=1,Callback=function(H)j.Player.Scale=H end})G:CreateButton({Name="Resetar Personagem",Callback=function()pcall(function()o():BreakJoints()end)end})local I=F:CreateTab("Auto Farm")I:CreateToggle({Name="Ativar Auto Farm (Magnet)",CurrentValue=false,Callback=function(H)j.Farm.Enabled=H u(H)if not H and j.UI.StatusLabel then pcall(function()j.UI.StatusLabel:Set("Status: Stopped")end)end end})I:CreateSlider({Name="Raio do Ímã",Range={5,100},Increment=1,CurrentValue=j.Farm.Radius,Callback=function(H)j.Farm.Radius=H end})I:CreateSlider({Name="Velocidade de Puxar",Range={10,200},Increment=1,CurrentValue=j.Farm.Speed,Callback=function(H)j.Farm.Speed=H end})j.UI.StatusLabel=I:CreateLabel("Status: Stopped")I:CreateButton({Name="Pausar / Retomar Ímã (Atalho: T)",Callback=function()if j.Farm.Enabled then u(not j.Farm.MagnetOn)else n("Aviso","Ative o Auto Farm primeiro.",2)end end})local J=F:CreateTab("Teleports")J:CreateButton({Name="TP 1 — Pegar Caixas",Callback=function()q("TP 1 — Pegar Caixas",Vector3.new(-25621,32,-5925))end})J:CreateButton({Name="TP 2 — Construção",Callback=function()q("TP 2 — Construção",Vector3.new(-3618,65,-2508))end})J:CreateButton({Name="TP 3 — Auto Peças",Callback=function()q("TP 3 — Auto Peças",Vector3.new(-3328,65,-3422))end})J:CreateButton({Name="TP 4 — Posto Auto",Callback=function()q("TP 4 — Posto Auto",Vector3.new(-3214,66,-3697))end})J:CreateButton({Name="TP 5 — Concessionária",Callback=function()q("TP 5 — Concessionária",Vector3.new(-3080,66,-3689))end})J:CreateButton({Name="TP 6 — Ferro Velho",Callback=function()q("TP 6 — Ferro Velho",Vector3.new(-3147,64,-4246))end})local K=F:CreateTab("Settings")K:CreateToggle({Name="Notificações na Tela",CurrentValue=j.Settings.Notifications,Callback=function(H)j.Settings.Notifications=H end})K:CreateButton({Name="Destruir Interface (Descarregar)",Callback=function()t()l:ClearAll()h:Destroy()end})K:CreateLabel("Versão: 2.4 (Abas Corrigidas)")j.UI.StatsLabel=K:CreateLabel("Calculando FPS/Ping...")n("Sucesso","Menu carregado! Todas as abas ativas.",3)end local function L()local M=Instance.new("ScreenGui")M.Name="KeySystemUI"M.Parent=e M.IgnoreGuiInset=true local N=Instance.new("Frame")N.Size=UDim2.new(0,350,0,150)N.Position=UDim2.new(0.5,-175,0.5,-75)N.BackgroundColor3=Color3.fromRGB(20,20,25)N.BorderSizePixel=0 N.Parent=M local O=Instance.new("UICorner",N)O.CornerRadius=UDim.new(0,10)local P=Instance.new("UIStroke",N)P.Color=Color3.fromRGB(255,50,50)P.Thickness=2 local Q=Instance.new("TextLabel",N)Q.Size=UDim2.new(1,0,0,40)Q.BackgroundTransparency=1 Q.Text="🔑 Torcidas 7 - Key System"Q.TextColor3=Color3.new(1,1,1)Q.Font=Enum.Font.GothamBold Q.TextSize=18 local R=Instance.new("TextBox",N)R.Size=UDim2.new(1,-40,0,40)R.Position=UDim2.new(0,20,0,45)R.PlaceholderText="Digite sua Key aqui..."R.BackgroundColor3=Color3.fromRGB(30,30,35)R.TextColor3=Color3.new(1,1,1)R.Font=Enum.Font.Gotham R.TextSize=14 Instance.new("UICorner",R).CornerRadius=UDim.new(0,6)local S=Instance.new("TextButton",N)S.Size=UDim2.new(1,-40,0,35)S.Position=UDim2.new(0,20,0,95)S.BackgroundColor3=Color3.fromRGB(255,50,50)S.Text="Verificar Key"S.TextColor3=Color3.new(1,1,1)S.Font=Enum.Font.GothamBold S.TextSize=14 Instance.new("UICorner",S).CornerRadius=UDim.new(0,6)S.MouseButton1Click:Connect(function()if R.Text==i then S.Text="Key Aprovada!"S.BackgroundColor3=Color3.fromRGB(50,255,50)task.wait(0.5)M:Destroy()E()else S.Text="Key Incorreta!"R.Text=""task.wait(1)S.Text="Verificar Key"end end)end L()
+-- ====================================================================
+-- SERVIÇOS DO ROBLOX
+-- ====================================================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- ====================================================================
+-- INICIALIZAÇÃO DA BIBLIOTECA RAYFIELD (Com Tratamento de Erro)
+-- ====================================================================
+local success, Rayfield = pcall(function()
+    return loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+end)
+
+if not success or not Rayfield then
+    warn("Falha crítica ao carregar a biblioteca Rayfield.")
+    return
+end
+
+-- ====================================================================
+-- ESTADOS E CONFIGURAÇÕES DO SCRIPT
+-- ====================================================================
+local KEY_CORRETA = "Anonymus777777"
+
+local State = {
+    Player = {
+        WalkSpeed = 16,
+        JumpPower = 50,
+        Gravity = Workspace.Gravity,
+        InfJump = false,
+        Noclip = false,
+        AutoSprint = false,
+        Scale = 1,
+    },
+    Farm = {
+        Enabled = false,
+        MagnetOn = false,
+        Radius = 20,
+        Speed = 45,
+    },
+    Settings = {
+        Notifications = true,
+    },
+    UI = {
+        StatusLabel = nil,
+        StatsLabel = nil,
+    }
+}
+
+-- Estruturas internas para o Ímã
+local MagnetData = {
+    OverlapParams = nil,
+    FixedObjects = {},
+    Welds = {}
+}
+
+-- ====================================================================
+-- GERENCIADOR DE CONEXÕES (PREVINE MEMORY LEAKS)
+-- ====================================================================
+local ConnectionManager = {}
+local ActiveConnections = {}
+
+function ConnectionManager:Add(name, connection)
+    self:Remove(name)
+    ActiveConnections[name] = connection
+end
+
+function ConnectionManager:Remove(name)
+    if ActiveConnections[name] then
+        ActiveConnections[name]:Disconnect()
+        ActiveConnections[name] = nil
+    end
+end
+
+function ConnectionManager:ClearAll()
+    for name, connection in pairs(ActiveConnections) do
+        if connection and typeof(connection) == "RBXScriptConnection" then
+            connection:Disconnect()
+        end
+    end
+    table.clear(ActiveConnections)
+end
+
+-- ====================================================================
+-- FUNÇÕES AUXILIARES
+-- ====================================================================
+local function Notify(title, content, duration)
+    if State.Settings.Notifications then
+        pcall(function()
+            Rayfield:Notify({
+                Title = title,
+                Content = content,
+                Duration = duration or 3,
+                Image = 4483362458,
+            })
+        end)
+    end
+end
+
+local function GetCharacter()
+    return LocalPlayer.Character
+end
+
+local function GetRoot()
+    local char = GetCharacter()
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
+
+-- ====================================================================
+-- MÓDULO: TELEPORTE
+-- ====================================================================
+local function ExecutarTeleporte(locationName, position)
+    local tpSuccess, err = pcall(function()
+        local hrp = GetRoot()
+        if not hrp then
+            error("HumanoidRootPart não encontrada. Personagem morto ou ausente.")
+        end
+        hrp.CFrame = CFrame.new(position + Vector3.new(0, 3, 0))
+    end)
+
+    if tpSuccess then
+        Notify("Teleporte Concluído", "Você foi levado para: " .. locationName, 2)
+    else
+        warn("Erro no teleporte para " .. locationName .. ": " .. tostring(err))
+        Notify("Erro de Teleporte", "Falha ao teleportar. Verifique se o personagem está vivo.", 3)
+    end
+end
+
+-- ====================================================================
+-- MÓDULO: PLAYER
+-- ====================================================================
+local function ApplyPlayerStats()
+    pcall(function()
+        local char = GetCharacter()
+        if not char then return end
+        
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        
+        if hum then
+            local targetSpeed = State.Player.AutoSprint and (State.Player.WalkSpeed * 1.5) or State.Player.WalkSpeed
+            if hum.WalkSpeed ~= targetSpeed then hum.WalkSpeed = targetSpeed end
+            
+            hum.UseJumpPower = true
+            if hum.JumpPower ~= State.Player.JumpPower then hum.JumpPower = State.Player.JumpPower end
+        end
+
+        if hrp then
+            local targetSize = Vector3.new(2, 1, 1) * State.Player.Scale
+            if hrp.Size ~= targetSize then hrp.Size = targetSize end
+        end
+        
+        if Workspace.Gravity ~= State.Player.Gravity then
+            Workspace.Gravity = State.Player.Gravity
+        end
+    end)
+end
+
+task.spawn(function()
+    while true do
+        task.wait(0.2)
+        ApplyPlayerStats()
+    end
+end)
+
+ConnectionManager:Add("InfJump", UserInputService.JumpRequest:Connect(function()
+    if State.Player.InfJump then
+        pcall(function()
+            local char = GetCharacter()
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    end
+end))
+
+ConnectionManager:Add("Noclip", RunService.Stepped:Connect(function()
+    if not State.Player.Noclip then return end
+    
+    pcall(function()
+        local char = GetCharacter()
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end))
+
+-- ====================================================================
+-- MÓDULO: MAGNET (AUTO FARM)
+-- ====================================================================
+local function InitMagnetParams()
+    if not MagnetData.OverlapParams then
+        MagnetData.OverlapParams = OverlapParams.new()
+        MagnetData.OverlapParams.FilterType = Enum.RaycastFilterType.Blacklist
+    end
+    MagnetData.OverlapParams.FilterDescendantsInstances = {GetCharacter() or {}}
+end
+
+local function ClearMagnet()
+    for _, weld in pairs(MagnetData.Welds) do
+        if weld and weld.Parent then weld:Destroy() end
+    end
+    table.clear(MagnetData.Welds)
+    table.clear(MagnetData.FixedObjects)
+end
+
+local function ToggleMagnet(enabled)
+    State.Farm.MagnetOn = enabled
+    if not enabled then
+        ClearMagnet()
+        Notify("Ímã", "Desligado - Objetos Soltos", 2)
+    else
+        Notify("Ímã", "Ligado - Puxando Objetos", 2)
+    end
+    
+    if State.UI.StatusLabel then
+        pcall(function()
+            State.UI.StatusLabel:Set("Status: " .. (enabled and "Running" or "Paused"))
+        end)
+    end
+end
+
+ConnectionManager:Add("MagnetLoop", RunService.Heartbeat:Connect(function()
+    if not State.Farm.Enabled or not State.Farm.MagnetOn then return end
+
+    pcall(function()
+        local hrp = GetRoot()
+        if not hrp then return end
+
+        InitMagnetParams()
+        
+        local parts = Workspace:GetPartBoundsInRadius(hrp.Position, State.Farm.Radius, MagnetData.OverlapParams)
+
+        for _, obj in ipairs(parts) do
+            if obj.Name == "TranspBox" and not obj.Anchored and not MagnetData.FixedObjects[obj] then
+                local dist = (obj.Position - hrp.Position).Magnitude
+
+                if dist > 3 then
+                    local direction = (hrp.Position - obj.Position).Unit
+                    obj.AssemblyLinearVelocity = direction * State.Farm.Speed
+                else
+                    obj.AssemblyLinearVelocity = Vector3.zero
+                    local weld = Instance.new("WeldConstraint")
+                    weld.Part0 = hrp
+                    weld.Part1 = obj
+                    weld.Parent = obj
+
+                    MagnetData.FixedObjects[obj] = true
+                    MagnetData.Welds[obj] = weld
+                end
+            end
+        end
+    end)
+end))
+
+ConnectionManager:Add("MagnetHotkey", UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.T then
+        if State.Farm.Enabled then
+            ToggleMagnet(not State.Farm.MagnetOn)
+        else
+            Notify("Ímã", "Ative o Auto Farm no menu primeiro.", 2)
+        end
+    end
+end))
+
+-- ====================================================================
+-- ATUALIZADOR DE UI (FPS, PING)
+-- ====================================================================
+task.spawn(function()
+    while true do
+        task.wait(1)
+        if State.UI.StatsLabel then
+            pcall(function()
+                local ping = math.floor(LocalPlayer:GetNetworkPing() * 1000)
+                local fps = math.floor(1 / RunService.RenderStepped:Wait())
+                State.UI.StatsLabel:Set(string.format("FPS: %d | Ping: %d ms", fps, ping))
+            end)
+        end
+    end
+end)
+
+-- ====================================================================
+-- CRIAÇÃO DA INTERFACE RAYFIELD (MENU PRINCIPAL)
+-- ====================================================================
+local function BuildRayfieldMenu()
+    local Window = Rayfield:CreateWindow({
+        Name = "Torcidas 7",
+        LoadingTitle = "Carregando...",
+        LoadingSubtitle = "by Assistant",
+        ConfigurationSaving = { Enabled = false },
+        KeySystem = false,
+    })
+
+    if not Window then
+        warn("Falha ao criar a janela do Rayfield.")
+        return
+    end
+
+    -- ---------------------------------------------------------
+    -- ABA 1: PLAYER
+    -- ---------------------------------------------------------
+    local PlayerTab = Window:CreateTab("Player")
+
+    PlayerTab:CreateSlider({
+        Name = "WalkSpeed", Range = {16, 300}, Increment = 1, CurrentValue = State.Player.WalkSpeed,
+        Callback = function(v) State.Player.WalkSpeed = v end
+    })
+    
+    PlayerTab:CreateSlider({
+        Name = "JumpPower", Range = {50, 300}, Increment = 1, CurrentValue = State.Player.JumpPower,
+        Callback = function(v) State.Player.JumpPower = v end
+    })
+
+    PlayerTab:CreateSlider({
+        Name = "Gravidade", Range = {0, 500}, Increment = 5, CurrentValue = State.Player.Gravity,
+        Callback = function(v) State.Player.Gravity = v end
+    })
+
+    PlayerTab:CreateToggle({
+        Name = "Pulo Infinito (InfJump)", CurrentValue = false,
+        Callback = function(v) State.Player.InfJump = v end
+    })
+
+    PlayerTab:CreateToggle({
+        Name = "Atravessar Paredes (Noclip)", CurrentValue = false,
+        Callback = function(v) State.Player.Noclip = v end
+    })
+
+    PlayerTab:CreateToggle({
+        Name = "Auto Sprint", CurrentValue = false,
+        Callback = function(v) State.Player.AutoSprint = v end
+    })
+
+    PlayerTab:CreateSlider({
+        Name = "Tamanho do Personagem", Range = {0.5, 3}, Increment = 0.1, CurrentValue = 1,
+        Callback = function(v) State.Player.Scale = v end
+    })
+
+    PlayerTab:CreateButton({
+        Name = "Resetar Personagem",
+        Callback = function() 
+            pcall(function() GetCharacter():BreakJoints() end) 
+        end
+    })
+
+    -- ---------------------------------------------------------
+    -- ABA 2: AUTO FARM (MAGNET)
+    -- ---------------------------------------------------------
+    local FarmTab = Window:CreateTab("Auto Farm")
+
+    FarmTab:CreateToggle({
+        Name = "Ativar Auto Farm (Magnet)", CurrentValue = false,
+        Callback = function(v)
+            State.Farm.Enabled = v
+            ToggleMagnet(v)
+            if not v and State.UI.StatusLabel then 
+                pcall(function() State.UI.StatusLabel:Set("Status: Stopped") end) 
+            end
+        end
+    })
+
+    FarmTab:CreateSlider({
+        Name = "Raio do Ímã", Range = {5, 100}, Increment = 1, CurrentValue = State.Farm.Radius,
+        Callback = function(v) State.Farm.Radius = v end
+    })
+
+    FarmTab:CreateSlider({
+        Name = "Velocidade de Puxar", Range = {10, 200}, Increment = 1, CurrentValue = State.Farm.Speed,
+        Callback = function(v) State.Farm.Speed = v end
+    })
+
+    State.UI.StatusLabel = FarmTab:CreateLabel("Status: Stopped")
+
+    FarmTab:CreateButton({
+        Name = "Pausar / Retomar Ímã (Atalho: T)",
+        Callback = function()
+            if State.Farm.Enabled then
+                ToggleMagnet(not State.Farm.MagnetOn)
+            else
+                Notify("Aviso", "Ative o Auto Farm primeiro.", 2)
+            end
+        end
+    })
+
+    -- ---------------------------------------------------------
+    -- ABA 3: TELEPORTS (Garantida e Visível)
+    -- ---------------------------------------------------------
+    local TeleportTab = Window:CreateTab("Teleports")
+
+    TeleportTab:CreateButton({
+        Name = "TP 1 — Pegar Caixas",
+        Callback = function()
+            ExecutarTeleporte("TP 1 — Pegar Caixas", Vector3.new(-25621, 32, -5925))
+        end
+    })
+
+    TeleportTab:CreateButton({
+        Name = "TP 2 — Construção",
+        Callback = function()
+            ExecutarTeleporte("TP 2 — Construção", Vector3.new(-3618, 65, -2508))
+        end
+    })
+
+    TeleportTab:CreateButton({
+        Name = "TP 3 — Auto Peças",
+        Callback = function()
+            ExecutarTeleporte("TP 3 — Auto Peças", Vector3.new(-3328, 65, -3422))
+        end
+    })
+
+    TeleportTab:CreateButton({
+        Name = "TP 4 — Posto Auto",
+        Callback = function()
+            ExecutarTeleporte("TP 4 — Posto Auto", Vector3.new(-3214, 66, -3697))
+        end
+    })
+
+    TeleportTab:CreateButton({
+        Name = "TP 5 — Concessionária",
+        Callback = function()
+            ExecutarTeleporte("TP 5 — Concessionária", Vector3.new(-3080, 66, -3689))
+        end
+    })
+
+    TeleportTab:CreateButton({
+        Name = "TP 6 — Ferro Velho",
+        Callback = function()
+            ExecutarTeleporte("TP 6 — Ferro Velho", Vector3.new(-3147, 64, -4246))
+        end
+    })
+
+    -- ---------------------------------------------------------
+    -- ABA 4: SETTINGS (Garantida e Visível)
+    -- ---------------------------------------------------------
+    local SettingsTab = Window:CreateTab("Settings")
+
+    SettingsTab:CreateToggle({
+        Name = "Notificações na Tela", CurrentValue = State.Settings.Notifications,
+        Callback = function(v) State.Settings.Notifications = v end
+    })
+
+    SettingsTab:CreateButton({
+        Name = "Destruir Interface (Descarregar)",
+        Callback = function()
+            ClearMagnet()
+            ConnectionManager:ClearAll()
+            Rayfield:Destroy()
+        end
+    })
+
+    SettingsTab:CreateLabel("Versão: 2.4 (Abas Corrigidas)")
+    State.UI.StatsLabel = SettingsTab:CreateLabel("Calculando FPS/Ping...")
+
+    Notify("Sucesso", "Menu carregado! Todas as abas ativas.", 3)
+end
+
+-- ====================================================================
+-- SISTEMA DE KEY
+-- ====================================================================
+local function BuildKeySystem()
+    local screen = Instance.new("ScreenGui")
+    screen.Name = "KeySystemUI"
+    screen.Parent = CoreGui
+    screen.IgnoreGuiInset = true
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 350, 0, 150)
+    frame.Position = UDim2.new(0.5, -175, 0.5, -75)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    frame.BorderSizePixel = 0
+    frame.Parent = screen
+
+    local corner = Instance.new("UICorner", frame)
+    corner.CornerRadius = UDim.new(0, 10)
+
+    local stroke = Instance.new("UIStroke", frame)
+    stroke.Color = Color3.fromRGB(255, 50, 50)
+    stroke.Thickness = 2
+
+    local title = Instance.new("TextLabel", frame)
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundTransparency = 1
+    title.Text = "🔑 Torcidas 7 - Key System"
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 18
+
+    local textbox = Instance.new("TextBox", frame)
+    textbox.Size = UDim2.new(1, -40, 0, 40)
+    textbox.Position = UDim2.new(0, 20, 0, 45)
+    textbox.PlaceholderText = "Digite sua Key aqui..."
+    textbox.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    textbox.TextColor3 = Color3.new(1, 1, 1)
+    textbox.Font = Enum.Font.Gotham
+    textbox.TextSize = 14
+    Instance.new("UICorner", textbox).CornerRadius = UDim.new(0, 6)
+
+    local btn = Instance.new("TextButton", frame)
+    btn.Size = UDim2.new(1, -40, 0, 35)
+    btn.Position = UDim2.new(0, 20, 0, 95)
+    btn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    btn.Text = "Verificar Key"
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+    btn.MouseButton1Click:Connect(function()
+        if textbox.Text == KEY_CORRETA then
+            btn.Text = "Key Aprovada!"
+            btn.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+            task.wait(0.5)
+            screen:Destroy()
+            BuildRayfieldMenu()
+        else
+            btn.Text = "Key Incorreta!"
+            textbox.Text = ""
+            task.wait(1)
+            btn.Text = "Verificar Key"
+        end
+    end)
+end
+
+-- ====================================================================
+-- START DO SCRIPT
+-- ====================================================================
+BuildKeySystem()
